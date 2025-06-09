@@ -1,4 +1,4 @@
-function saveMCPotts(s, MCS, n, q, pacc, prex, time, strain_energy, temperature, E0, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en)
+function saveMCPotts(s, MCS, n, q, pacc, prex, time, strain_energy, temperature, E0, EsMap, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en)
     % Save variables to a file named 'restart-(MCS).mat'
 
     if ~exist('output', 'dir')
@@ -10,5 +10,5 @@ function saveMCPotts(s, MCS, n, q, pacc, prex, time, strain_energy, temperature,
     filepath = fullfile('output', file_name);
 
     % Save variables to the file
-    save(filepath, 's', 'MCS', 'n', 'q', 'pacc', 'prex', 'time', 'strain_energy', 'temperature', 'E0', 'totalEnergyArr', 'grainBoundaryEnergyArr', 'strainEnergyArr', 'total_en', 'grain_boundary_en', 'strain_en');
+    save(filepath, 's', 'MCS', 'n', 'q', 'pacc', 'prex', 'time', 'strain_energy', 'temperature', 'E0', 'EsMap', 'totalEnergyArr', 'grainBoundaryEnergyArr', 'strainEnergyArr', 'total_en', 'grain_boundary_en', 'strain_en');
 end
