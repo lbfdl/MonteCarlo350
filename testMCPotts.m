@@ -1,4 +1,4 @@
-function energyChange = testMCPotts(n, s, E0, total_energy, strain_energy)
+function energyChange = testMCPotts(n, s, E0, total_energy, EsMap)
     % Calculate the percentage error in the final energy to ensure accurate updates
 
     % Initialize energy test variables
@@ -20,7 +20,7 @@ function energyChange = testMCPotts(n, s, E0, total_energy, strain_energy)
 
             % Check for strain energy
             if sij ~= 1
-                strain_energy_test = strain_energy_test + strain_energy;
+                strain_energy_test = strain_energy_test + EsMap(i, j);
             end
 
         end

@@ -1,4 +1,4 @@
-function [totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, s, time] = runMCPotts(s, MCS, n, q, pacc, prex, time, N, nconfig, temperature, E0, strain_energy, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en)
+function [totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, s, time] = runMCPotts(s, MCS, n, q, pacc, prex, time, N, nconfig, temperature, E0, strain_energy, EsMap, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en)
 % Perform Monte Carlo steps
 
 fig1 = figure(1);
@@ -62,8 +62,8 @@ for k = 1:nconfig
 
     sign = calculateEnergy(sij, s, n, i, j);
     sigo = calculateEnergy(sijo, s, n, i, j);
-    esn = double(sij ~= 1) * strain_energy;
-    eso = double(sijo ~= 1) * strain_energy;
+    esn = double(sij ~= 1) * EsMap(i, j);
+    eso = double(sijo ~= 1) * EsMap(i, j);
 
     del =- (sign - sigo) * E0;
     del_es = esn - eso;
@@ -140,7 +140,7 @@ for k = 1:nconfig
                 disp(['Snapshot saved at MCS = ', num2str(MCS), '!']);
         end
         if mod(MCS, 100) == 0
-                saveMCPotts(s, MCS, n, q, pacc, prex, time, strain_energy, temperature, E0, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en);
+                saveMCPotts(s, MCS, n, q, pacc, prex, time, strain_energy, temperature, E0, EsMap, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en);
             if strain_energy
                 plotMCPotts(fig1, fig2, fig3, fig4, MCS, true, true, true, true);
             else
@@ -150,7 +150,7 @@ for k = 1:nconfig
         end
         % Save the current state every 100 MCS
         if mod(MCS, 100) == 0
-            saveMCPotts(s, MCS, n, q, pacc, prex, time, strain_energy, temperature, E0, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en);
+            saveMCPotts(s, MCS, n, q, pacc, prex, time, strain_energy, temperature, E0, EsMap, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en);
 
             if strain_energy
                 plotMCPotts(fig1, fig2, fig3, fig4, MCS, true, true, true, true);

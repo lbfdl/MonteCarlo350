@@ -1,8 +1,8 @@
-function [strainEnergy] = strainEnergyAssign(s, i, j, grainID, strain_energy)
-    % Assign strain energy based on the spin value
+function strainEnergy = strainEnergyAssign(s, i, j, grainID, EsMap)
+    % Assign strain energy based on the spin value and stored energy map
 
     if s(i, j) ~= grainID
-        strainEnergy = strain_energy;
+        strainEnergy = EsMap(i, j);
     else
         strainEnergy = 0;
     end

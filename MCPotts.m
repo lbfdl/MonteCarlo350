@@ -7,7 +7,7 @@
 % - MCS (optional): Monte Carlo Step to continue run from. Default is 0.
 % - n (optional): Size of the lattice (n x n). Default is 40.
 % - q (optional): The range of possible spin values (1 to q). Default is 4.
-% - strain_energy (optional): Strain energy value (Es). Default is 0 J/mol.
+% - strain_energy (optional): Strain energy value or map (Es). Default is 0 J/mol.
 % - temperature (optional): Temperature value. Default is 0 K.
 % - E0 (optional): Grain boundary energy value (Egb). Default is 1000 J/mol.
 %
@@ -29,29 +29,30 @@ function [totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, s, time, pacc
     p = inputParser;
     errorMsgScalarPosNum = 'Value must be a scalar.';
     validScalarPosNum = @(x) assert(isnumeric(x) && isscalar(x) && (x >= 0), errorMsgScalarPosNum);
+    validNumericPos = @(x) assert(isnumeric(x) && all(x(:) >= 0), 'Value must be numeric.');
 
     addRequired(p, 'nstep', validScalarPosNum);
     addOptional(p, 'MCS', 0, validScalarPosNum);
     addOptional(p, 'n', 50, validScalarPosNum);
     addOptional(p, 'q', 5, validScalarPosNum);
-    addOptional(p, 'strain_energy', 0, validScalarPosNum);
+    addOptional(p, 'strain_energy', 0, validNumericPos);
     addOptional(p, 'temperature', 0, validScalarPosNum);
     addOptional(p, 'E0', 1, validScalarPosNum);
     parse(p, nstep, varargin{:});
 
     % Check if restarting from a previous run
     if p.Results.MCS
-        [s, MCS, n, q, pacc, prex, time, strain_energy, temperature, E0, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en] = loadMCPotts(p.Results.MCS, p.Results.strain_energy, p.Results.temperature, p.Results.E0);
+        [s, MCS, n, q, pacc, prex, time, strain_energy, temperature, E0, EsMap, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en] = loadMCPotts(p.Results.MCS, p.Results.strain_energy, p.Results.temperature, p.Results.E0);
         N = n * n;
         nconfig = N * p.Results.nstep;
     else
-        [s, MCS, n, q, pacc, prex, time, N, nconfig, strain_energy, temperature, E0, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en] = initMCPotts(p.Results.n, p.Results.nstep, p.Results.q, p.Results.strain_energy, p.Results.temperature, p.Results.E0);
+        [s, MCS, n, q, pacc, prex, time, N, nconfig, strain_energy, temperature, E0, EsMap, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en] = initMCPotts(p.Results.n, p.Results.nstep, p.Results.q, p.Results.strain_energy, p.Results.temperature, p.Results.E0);
     end
 
     % Perform Monte Carlo simulation
-    [totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, s, time] = runMCPotts(s, MCS, n, q, pacc, prex, time, N, nconfig, temperature, E0, strain_energy, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en);
+    [totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, s, time] = runMCPotts(s, MCS, n, q, pacc, prex, time, N, nconfig, temperature, E0, strain_energy, EsMap, totalEnergyArr, grainBoundaryEnergyArr, strainEnergyArr, total_en, grain_boundary_en, strain_en);
 
     % Test the final energy to ensure accurate updates
-    energyChange = testMCPotts(n, s, E0, totalEnergyArr(end), strain_energy);
+    energyChange = testMCPotts(n, s, E0, totalEnergyArr(end), EsMap);
 
 end
